@@ -2,6 +2,31 @@
 
 ## Es un algoritmo que calcula la Transformada discreta de Fourier (TDF) de una señal, pero de manera mucho más eficiente. La TDF convierte una señal del dominio del tiempo al dominio de la frecuencia. El presente código realizado con lenguaje de programación pyhton convierte la FFT en una función que devuelve *valores*, *magnitudes*, *fases* y *frecuencia*. Se ha refactorizado el código para imprimir los resultados en orden y entendibles uniendo la FFT, IDTF y DTF.
 
+## Para las importaciones "math" librería estándar para operaciones matemáticas.
+
+## "cmath" librería para operaciones con números complejos.
+
+## FFTResponse para encapsular los resultados de la FFT en un objeto con atributos.
+
+## class fourier define la clase Fourier que agrupa todos los metodos relacionados.
+
+## "N: int = len(x)" obtiene el numero de muestras.
+## "T = [cmath.exp(-2j * math.pi * k / N) * X_odd[k] for k in range(N // 2)]" calcula los valores de rotacion complejos. 
+## "def mi_fft(self, x: list[float], fs: float = 1.0) -> FFTResponse:" Este método usa la FFT recursiva anterior y devuelve un objeto FFTResponse con toda la información organizada. 
+## "x_complex = [complex(v) for v in x]" Convierte cada muestra real en un número complejo (parte imaginaria = 0).
+
+## "valores_fft = self.fft(x_complex)" llama a fft para obtener los coeficientes complejos.
+
+## "magnitudes = [abs(v) for v in valores_fft]magnitudes = [abs(v) for v in valores_fft]" calcula la magnitud de cada coeficiente.
+
+## "fases = [cmath.phase(v) for v in valores_fft]" Calcula las fases.
+
+## la variable freqs construje el eje de frecuencia.
+
+## la variable "result" devuelve un objeto con todos los datos listos para el analisis.
+
+
+
 ### archivo fourier.py. Aqui unicamente está el código de la FFT
 ```python
 import math
@@ -33,7 +58,6 @@ class Fourier:
         X_even: list[complex] = self.fft(x[0::2])
         X_odd:  list[complex] = self.fft(x[1::2])
 
-        # Factores twiddle
         T: list[complex] = [
             cmath.exp(-2j * math.pi * k / N) * X_odd[k]
             for k in range(N // 2)
