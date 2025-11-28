@@ -1,12 +1,12 @@
 import math
 import cmath
-from typing import List, Tuple
 
+from fourier.core.fourier_response import FFTResponse
 class Fourier:
     def __init__(self) -> None:
         pass
 
-    def fft(self, x: List[complex]) -> List[complex]:
+    def fft(self, x: list[complex]) -> list[complex]:
         """
         Implementación recursiva de la FFT (Cooley–Tukey).
         Se llama a sí misma.
@@ -24,11 +24,11 @@ class Fourier:
             return x
 
         # FFT recursiva en índices pares e impares
-        X_even: List[complex] = self.fft(x[0::2])
-        X_odd:  List[complex] = self.fft(x[1::2])
+        X_even: list[complex] = self.fft(x[0::2])
+        X_odd:  list[complex] = self.fft(x[1::2])
 
         # Factores twiddle
-        T: List[complex] = [
+        T: list[complex] = [
             cmath.exp(-2j * math.pi * k / N) * X_odd[k]
             for k in range(N // 2)
         ]
@@ -39,49 +39,45 @@ class Fourier:
             [X_even[k] - T[k] for k in range(N // 2)]
         )
 
-    def mi_fft(self, x: List[float], fs: float = 1.0) -> dict:
+    def mi_fft(self, x: list[float], fs: float = 1.0) -> FFTResponse:
         """
         Calcula FFT sin NumPy y devuelve todo tipado.
 
-        Parámetros:
+        Args:
             x  : List[float]  -> señal de entrada
             fs : float        -> frecuencia de muestreo
 
-        Retorna:
-            Tuple con:
-            - List[complex] : valores complejos de la FFT
-            - List[float]   : magnitudes
-            - List[float]   : fases
-            - List[float]   : frecuencias en Hz
+        Return:
+            FFTResponse: respuesta formateada de componentes de fourier
         """
 
         N: int = len(x)
 
         # Convertir a complejos
-        x_complex: List[complex] = [complex(v) for v in x]
+        x_complex: list[complex] = [complex(v) for v in x]
 
         # 1. FFT
-        valores_fft: List[complex] = self.fft(x_complex)
+        valores_fft: list[complex] = self.fft(x_complex)
 
         # 2. Magnitudes
-        magnitudes: List[float] = [abs(v) for v in valores_fft]
+        magnitudes: list[float] = [abs(v) for v in valores_fft]
 
         # 3. Fases
-        fases: List[float] = [cmath.phase(v) for v in valores_fft]
+        fases: list[float] = [cmath.phase(v) for v in valores_fft]
 
         # 4. Vector de frecuencias
-        freqs: List[float] = []
+        freqs: list[float] = []
         for k in range(N):
             if k < N // 2:
                 freqs.append(k * fs / N)
             else:
                 freqs.append((k - N) * fs / N)
         
-        result = {
-            "valores": valores_fft,
-            "magnitudes": magnitudes,
-            "fases": fases,
-            "frecuencias": freqs
-        }
+        result = FFTResponse(
+            valores=valores_fft,
+            magnitudes=magnitudes,
+            fases=fases,
+            frecuencias=freqs
+        )
 
         return result
